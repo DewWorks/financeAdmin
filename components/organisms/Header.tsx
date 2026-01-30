@@ -2,12 +2,21 @@
 
 import { Button } from '@/components/atoms/Button';
 import { Input } from '@/components/atoms/Input';
-import { Bell, Search, User } from 'lucide-react';
+import { Bell, Search, User, Menu } from 'lucide-react';
 
-export function Header() {
+interface HeaderProps {
+    onMenuClick?: () => void;
+}
+
+export function Header({ onMenuClick }: HeaderProps) {
     return (
         <header className="flex h-14 items-center gap-4 border-b bg-card px-6">
+            <Button variant="ghost" size="icon" className="md:hidden -ml-2" onClick={onMenuClick}>
+                <Menu className="h-5 w-5" />
+            </Button>
+
             <div className="flex-1">
+
                 {/* Search Bar - Hidden for now as requested or simple implementation */}
                 {/* <div className="relative w-full max-w-sm">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />

@@ -3,23 +3,19 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/atoms/Card';
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from 'recharts';
 
-const data = [
-    { name: 'Jan', total: 1200 },
-    { name: 'Feb', total: 2100 },
-    { name: 'Mar', total: 800 },
-    { name: 'Apr', total: 1600 },
-    { name: 'May', total: 900 },
-    { name: 'Jun', total: 1700 },
-    { name: 'Jul', total: 2400 },
-];
+interface RevenueChartProps {
+    data: { name: string; total: number }[];
+}
 
-export function RevenueChart() {
+export function RevenueChart({ data }: RevenueChartProps) {
     return (
-        <Card className="col-span-4">
+        <Card className="col-span-4 border-none shadow-sm bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm">
             <CardHeader>
-                <CardTitle>Revenue Overview</CardTitle>
-                <CardDescription>Monthly revenue transaction data (Mock).</CardDescription>
+                <CardTitle className="text-xl font-medium">Revenue Overview</CardTitle>
+                <CardDescription>Monthly revenue transaction data (Last 6 Months).</CardDescription>
             </CardHeader>
+
+
             <CardContent className="pl-2">
                 <div className="h-[300px] w-full">
                     <ResponsiveContainer width="100%" height="100%">

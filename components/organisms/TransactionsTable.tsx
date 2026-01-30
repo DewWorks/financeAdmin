@@ -1,42 +1,41 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { transactionService, Transaction } from '@/lib/services/transactionService';
+import { getTransactions, TransactionType } from '@/lib/services/transactionService';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/atoms/Card';
 import { Badge } from '@/components/atoms/Badge';
-import { format } from 'date-fns';
 
 export function TransactionsTable() {
-    const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [transactions, setTransactions] = useState<TransactionType[]>([]);
 
     useEffect(() => {
-        transactionService.getTransactions().then(setTransactions);
+        getTransactions().then(setTransactions);
     }, []);
 
     return (
-        <Card>
+        <Card className="border-none shadow-sm bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm">
             <CardHeader>
-                <CardTitle>Recent Transactions</CardTitle>
+                <CardTitle className="text-xl font-medium">Recent Transactions</CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="rounded-md border">
+                <div className="rounded-lg border bg-white dark:bg-zinc-900 overflow-hidden">
                     <table className="w-full caption-bottom text-sm text-left">
-                        <thead className="[&_tr]:border-b">
+                        <thead className="bg-zinc-50 dark:bg-zinc-800/50">
                             <tr className="border-b transition-colors hover:bg-muted/50">
-                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">ID</th>
-                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">User</th>
-                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Date</th>
-                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Amount</th>
-                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Status</th>
+                                <th className="h-10 px-4 text-left align-middle font-medium text-muted-foreground uppercase text-xs tracking-wider">ID</th>
+                                <th className="h-10 px-4 text-left align-middle font-medium text-muted-foreground uppercase text-xs tracking-wider">User</th>
+                                <th className="h-10 px-4 text-left align-middle font-medium text-muted-foreground uppercase text-xs tracking-wider">Date</th>
+                                <th className="h-10 px-4 text-left align-middle font-medium text-muted-foreground uppercase text-xs tracking-wider">Amount</th>
+                                <th className="h-10 px-4 text-left align-middle font-medium text-muted-foreground uppercase text-xs tracking-wider">Status</th>
                             </tr>
                         </thead>
-                        <tbody className="[&_tr:last-child]:border-0">
+                        <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
                             {transactions.map(txn => (
-                                <tr key={txn.id} className="border-b transition-colors hover:bg-muted/50">
-                                    <td className="p-4 align-middle font-medium">{txn.id}</td>
-                                    <td className="p-4 align-middle">{txn.user}</td>
-                                    <td className="p-4 align-middle">{txn.date}</td>
-                                    <td className="p-4 align-middle">${txn.amount.toFixed(2)}</td>
+                                <tr key={txn.id} className="transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
+                                    <td className="p-4 align-middle font-medium text-xs text-muted-foreground">{txn.id.substring(0, 8)}...</td>
+                                    <td className="p-4 align-middle font-medium">{txn.user}</td>
+                                    <td className="p-4 align-middle text-muted-foreground">{txn.date}</td>
+                                    <td className="p-4 align-middle font-medium">${txn.amount.toFixed(2)}</td>
                                     <td className="p-4 align-middle">
                                         <Badge variant={txn.status === 'completed' ? 'success' : txn.status === 'failed' ? 'destructive' : 'warning'}>
                                             {txn.status}

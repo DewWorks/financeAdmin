@@ -1,68 +1,72 @@
-'use client';
-
 import { StatCard } from '@/components/molecules/StatCard';
-import { RealTimeLogConsole } from '@/components/organisms/RealTimeLogConsole';
+import { Users, DollarSign, Activity, AlertCircle } from 'lucide-react';
 import { RevenueChart } from '@/components/organisms/RevenueChart';
-import { Users, DollarSign, Activity, AlertTriangle } from 'lucide-react';
-import { AlertBanner } from '@/components/molecules/AlertBanner';
+import { RealTimeLogConsole } from '@/components/organisms/RealTimeLogConsole';
+import { getStats, getRevenueHistory } from '@/lib/services/transactionService';
 
-export default function AdminDashboard() {
+export const dynamic = 'force-dynamic';
+
+export default async function AdminDashboard() {
+    const stats = await getStats();
+    const revenueHistory = await getRevenueHistory();
+
+    // Calculate generic trend (Mock logic for trend direction if history is empty)
+    // In a real scenario, we'd compare current month vs last month
+    const currentMonthIndex = new Date().getMonth(); // 0-11
+    // Use last available data point as current if index mismatch or just take last element
+    const currentMonthRev = revenueHistory[revenueHistory.length - 1]?.total || 0;
+    const lastMonthRev = revenueHistory[revenueHistory.length - 2]?.total || 0;
+
+    const trendPercent = lastMonthRev > 0
+        ? ((currentMonthRev - lastMonthRev) / lastMonthRev) * 100
+        : 0;
+
+    const trendDir = trendPercent > 0 ? 'up' : trendPercent < 0 ? 'down' : 'neutral';
+
     return (
         <div className="space-y-6">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <StatCard
                     title="Total Revenue"
-                    value="$45,231.89"
+                    value={`$${stats.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                     icon={DollarSign}
-                    description="+20.1% from last month"
-                    trend="up"
-                    trendValue="20.1%"
+                    description="Total earnings this year"
+                    trend={trendDir}
+                    trendValue={`${Math.abs(trendPercent).toFixed(1)}%`}
                 />
                 <StatCard
                     title="Active Users"
-                    value="+2350"
+                    value={stats.activeUsers ? stats.activeUsers.toString() : '0'}
                     icon={Users}
-                    description="+180 new users"
+                    description="Active ecosystem users"
                     trend="up"
-                    trendValue="180"
+                    trendValue="+5%"
                 />
                 <StatCard
-                    title="System Health"
-                    value="99.9%"
+                    title="Pending Transactions"
+                    value={stats.pending.toString()}
                     icon={Activity}
-                    description="All systems operational"
+                    description="Requires attention"
                     trend="neutral"
-                    trendValue="0%"
+                    trendValue="Waiting"
                 />
                 <StatCard
-                    title="Pending Issues"
-                    value="12"
-                    icon={AlertTriangle}
-                    description="+2 since last hour"
+                    title="Failed Transactions"
+                    value={stats.failed.toString()}
+                    icon={AlertCircle}
+                    description="Failed payments"
                     trend="down"
-                    trendValue="2"
+                    trendValue="-2%"
                 />
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
-                <RevenueChart />
-                <div className="col-span-4 lg:col-span-3">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+                <div className="col-span-4">
+                    <RevenueChart data={revenueHistory} />
+                </div>
+                <div className="col-span-3">
                     <RealTimeLogConsole />
                 </div>
-            </div>
-
-            {/* Example Global Alerts */}
-            <div className="grid gap-4 md:grid-cols-2">
-                <AlertBanner
-                    variant="warning"
-                    title="FinancePage Latency Warning"
-                    description="Response times for financePage are higher than usual (400ms)."
-                />
-                <AlertBanner
-                    variant="success"
-                    title="Backup Completed"
-                    description="Daily database backup for FinancePro completed successfully at 03:00 AM."
-                />
             </div>
         </div>
     );
